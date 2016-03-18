@@ -1,0 +1,23 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - williamyeh.oracle-java
+    - ANXS.postgresql
+    - openconcerto
+  vars:
+    java_version: 8
+    openconcerto_version: 1.4
+
+    postgresql_databases:
+      - name: openconcerto
+
+    postgresql_users:
+      - name: openconcerto
+        pass: openconcerto
+        encrypted: no
+
+    postgresql_user_privileges:
+      - name: openconcerto          # user name
+        db: openconcerto            # database
+        priv: "ALL"                 # privilege string format: example: INSERT,UPDATE/table:SELECT/anothertable:ALL

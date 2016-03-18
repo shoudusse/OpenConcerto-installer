@@ -1,0 +1,6 @@
+openconcerto_version: 1.4
+filename: OpenConcerto-{{ openconcerto_version }}-multiposte.tar.gz
+download_url: http://www.openconcerto.org/fr/telechargement/{{ openconcerto_version }}/{{ filename }}
+sql_filename: OpenConcerto-{{ openconcerto_version }}.sql
+sql_archive: "{{ sql_filename}}.zip"
+sql_url: http://www.openconcerto.org/fr/telechargement/{{ openconcerto_version }}/{{ sql_archive}}

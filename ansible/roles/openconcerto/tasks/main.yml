@@ -1,0 +1,42 @@
+- name: Download OpenConcerto
+  get_url: url={{ download_url }} dest=/tmp/
+
+- name: Create opt directory
+  file: path=/opt state=directory mode=0755
+
+- name: Extract archive
+  unarchive: src=/tmp/{{ filename }} dest=/opt copy=no
+
+- name: Download SQL db init
+  get_url: url={{ sql_url }} dest=/tmp/
+
+- name: Install unzip package
+  apt: name=unzip state=present update_cache=yes cache_valid_time=3600
+
+- name: Extract SQL db init
+  unarchive: src=/tmp/{{ sql_archive }} dest=/tmp copy=no
+
+- name: Apply SQL db init
+  command: psql openconcerto < /tmp/{{ sql_filename }}
+  become_user: postgres
+
+- name: Test become
+  command: whoami
+  register: whoami
+  become_user: postgres
+
+- name: Display
+  debug: msg="{{ whoami.stdout }}"
+
+- name: Set PostgreSQL listening on all interfaces
+  lineinfile:
+    dest: /etc/postgresql/9.3/main/postgresql.conf
+    regexp: ^listen_addresses
+    line: "listen_addresses = '*'          # what IP address(es) to listen on;"
+  notify: Restart PostgreSQL
+
+- name: Authorize PostgreSQL TCP connections for openconcerto user
+  lineinfile:
+    dest: /etc/postgresql/9.3/main/pg_hba.conf
+    line: "host       openconcerto  openconcerto  0.0.0.0/0  md5"
+  notify: Restart PostgreSQL
